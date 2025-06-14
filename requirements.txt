@@ -1,9 +1,11 @@
-setuptools==68.0.0  # Ensures build capability
-wheel==0.41.0       # Required for building wheels
+protobuf==4.25.3  # Add this line first
+--only-binary :all:
 Flask==2.3.3
 gunicorn==21.2.0
-numpy==1.24.4
-pandas==2.0.3
-scikit-learn==1.3.2
-matplotlib==3.7.1
+numpy==1.26.4
+pandas==2.1.4
+scikit-learn==1.4.0
+matplotlib==3.8.4
 seaborn==0.12.2
+mediapipe==0.10.14  # If you use MediaPipe
+tensorflow-intel==2.17.0  # If you use TensorFlow
