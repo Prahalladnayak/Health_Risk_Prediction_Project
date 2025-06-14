@@ -1,0 +1,1295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Risk Predictor | Prahallad Nayak</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --primary-light: #93c5fd;
+            --secondary: #10b981;
+            --secondary-light: #a7f3d0;
+            --danger: #ef4444;
+            --danger-light: #fecaca;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --light: #f8fafc;
+            --dark: #0f172a;
+            --gray: #64748b;
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --transition: all 0.3s ease;
+            --shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #dbeafe, #e0f2fe, #d1fae5);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--dark);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+            transition: background-color 0.5s ease, color 0.3s ease;
+        }
+
+        body.dark-mode {
+            background: linear-gradient(135deg, #0f172a, #1e293b, #1e3a8a);
+            background-size: 400% 400%;
+            color: #e2e8f0;
+            --card-bg: rgba(30, 41, 59, 0.92);
+            --light: #1e293b;
+            --dark: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--dark);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+        }
+
+        body.dark-mode .theme-toggle {
+            background: rgba(30, 41, 59, 0.5);
+            color: #e2e8f0;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        /* Falling symbols effect */
+        .symbols-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .symbol {
+            position: absolute;
+            font-size: 1.8rem;
+            animation: fall linear infinite;
+            opacity: 0.7;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            z-index: -1;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+            }
+        }
+
+        @keyframes rise {
+            to {
+                transform: translateY(-100vh) rotate(-360deg);
+            }
+        }
+
+        /* Header styling with sparkle effect */
+        .header {
+            text-align: center;
+            margin: 30px 0 40px;
+            position: relative;
+            z-index: 10;
+            perspective: 1000px;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+            display: inline-block;
+            transform-style: preserve-3d;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(0deg); }
+            50% { transform: translateY(-15px) rotateX(10deg); }
+        }
+
+        .greeting {
+            font-size: 1.6rem;
+            color: var(--dark);
+            font-weight: 500;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        body.dark-mode .greeting {
+            color: #e2e8f0;
+        }
+
+        .creator {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, #ff6b6b, #ffa502, #2ed573, #1e90ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: inline-block;
+            position: relative;
+            padding: 0 10px;
+            animation: sparkle 2s infinite, blink 2s infinite;
+            transform: translateZ(0);
+        }
+
+        @keyframes sparkle {
+            0% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); }
+            50% { text-shadow: 0 0 20px rgba(255, 215, 0, 0.8), 0 0 30px rgba(255, 255, 255, 0.9); }
+            100% { text-shadow: 0 0 5px rgba(255, 255, 255, 0.8); }
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        /* Main container */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 25px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            position: relative;
+            z-index: 5;
+            backdrop-filter: blur(12px);
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        body.dark-mode .container {
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Form styling */
+        .form-container {
+            padding: 40px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="rgba(37, 99, 235, 0.03)" /></svg>');
+        }
+
+        body.dark-mode .form-container {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="rgba(37, 99, 235, 0.03)" /></svg>');
+        }
+
+        h2 {
+            text-align: center;
+            color: var(--primary-dark);
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        body.dark-mode h2 {
+            color: #93c5fd;
+        }
+
+        h2:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .form-group:hover {
+            transform: translateY(-5px);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            padding-left: 10px;
+            position: relative;
+        }
+
+        body.dark-mode .form-group label {
+            color: #93c5fd;
+        }
+
+        .form-group label:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 5px;
+            height: 80%;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .input-container {
+            position: relative;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 16px 16px 16px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 1.05rem;
+            transition: var(--transition);
+            background: rgba(255, 255, 255, 0.8);
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.05);
+            color: var(--dark);
+        }
+
+        body.dark-mode .form-control {
+            background: rgba(30, 41, 59, 0.8);
+            border: 2px solid #334155;
+            color: #e2e8f0;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+            background: white;
+        }
+
+        body.dark-mode .form-control:focus {
+            background: rgba(30, 41, 59, 1);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.3);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            font-size: 1.2rem;
+            z-index: 2;
+        }
+
+        body.dark-mode .input-icon {
+            color: #93c5fd;
+        }
+
+        small {
+            display: block;
+            margin-top: 8px;
+            color: var(--gray);
+            font-size: 0.9rem;
+            padding-left: 10px;
+            font-style: italic;
+        }
+
+        .submit-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 18px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transition: 0.5s;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.5);
+        }
+
+        .submit-btn:hover:before {
+            left: 100%;
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Result styling */
+        .result-container {
+            padding: 30px;
+            text-align: center;
+            transition: var(--transition);
+            min-height: 180px;
+        }
+
+        .result-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 30px;
+            border-radius: 20px;
+            margin: 20px 0;
+            transition: var(--transition);
+            animation: fadeIn 0.8s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .healthy {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            color: var(--secondary);
+            border: 3px solid var(--secondary);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .risk {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            color: var(--danger);
+            border: 3px solid var(--danger);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.2);
+        }
+
+        body.dark-mode .healthy {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(16, 185, 129, 0.1));
+            border: 3px solid var(--secondary);
+        }
+
+        body.dark-mode .risk {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(239, 68, 68, 0.1));
+            border: 3px solid var(--danger);
+        }
+
+        .emoji {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: blink 1.5s infinite, float 3s ease-in-out infinite;
+            display: block;
+            filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.2));
+        }
+
+        /* Risk percentage bar */
+        .risk-bar-container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            background: #e2e8f0;
+            height: 35px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        body.dark-mode .risk-bar-container {
+            background: #334155;
+        }
+
+.risk-low {
+    background: linear-gradient(90deg, var(--secondary), var(--secondary-light));
+}
+
+.risk-medium {
+    background: linear-gradient(90deg, var(--warning), var(--warning-light));
+}
+
+.risk-high {
+    background: linear-gradient(90deg, #ff9a00, #ff6a00);
+}
+
+.risk-very-high {
+    background: linear-gradient(90deg, var(--danger), var(--danger-light));
+}
+
+
+        .risk-bar {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 1s ease-out;
+            background: linear-gradient(90deg, var(--secondary), var(--warning), var(--danger));
+            position: relative;
+        }
+
+        .risk-percentage {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .risk-labels {
+            display: flex;
+            justify-content: space-between;
+            width: 90%;
+            max-width: 600px;
+            margin: 10px auto 25px;
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        body.dark-mode .risk-labels {
+            color: #94a3b8;
+        }
+
+        .risk-labels span {
+            position: relative;
+            text-align: center;
+            flex: 1;
+            font-size: 0.8rem;
+        }
+
+        .risk-labels span:not(:last-child):after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            height: 15px;
+            width: 2px;
+            background: var(--gray);
+            opacity: 0.5;
+        }
+
+        /* Precaution section */
+        .precautions {
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 25px auto;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode .precautions {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .precautions h3 {
+            text-align: center;
+            color: var(--primary-dark);
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        body.dark-mode .precautions h3 {
+            color: #93c5fd;
+        }
+
+        .precautions h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .precaution-list {
+            list-style: none;
+            padding: 0 20px;
+        }
+
+        .precaution-list li {
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: flex-start;
+        }
+
+        body.dark-mode .precaution-list li {
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .precaution-list li:last-child {
+            border-bottom: none;
+        }
+
+        .precaution-list i {
+            color: var(--secondary);
+            margin-right: 15px;
+            font-size: 1.2rem;
+            min-width: 25px;
+            padding-top: 3px;
+        }
+
+        body.dark-mode .precaution-list i {
+            color: #34d399;
+        }
+
+        .precaution-content {
+            flex: 1;
+        }
+
+        .precaution-content h4 {
+            color: var(--primary-dark);
+            margin-bottom: 5px;
+        }
+
+        body.dark-mode .precaution-content h4 {
+            color: #93c5fd;
+        }
+
+        .precaution-content p {
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        body.dark-mode .precaution-content p {
+            color: #cbd5e1;
+        }
+
+        .learn-more {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 20px auto 0;
+            display: block;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+        }
+
+        .learn-more:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        .more-precautions {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease;
+        }
+
+        .more-precautions.show {
+            max-height: 1000px;
+        }
+
+        /* Download button */
+        .download-btn {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            margin: 20px auto;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Footer styling */
+        .footer {
+            text-align: center;
+            padding: 40px 20px 30px;
+            margin-top: 50px;
+            color: var(--dark);
+            position: relative;
+            z-index: 10;
+        }
+
+        body.dark-mode .footer {
+            color: #e2e8f0;
+        }
+
+        .footer:before {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: 0;
+            width: 100%;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23f8fafc" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,261.3C672,256,768,224,864,218.7C960,213,1056,235,1152,229.3C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        body.dark-mode .footer:before {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%231e293b" fill-opacity="1" d="M0,192L48,197.3C96,203,192,213,288,229.3C384,245,480,267,576,261.3C672,256,768,224,864,218.7C960,213,1056,235,1152,229.3C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .footer h3 {
+            font-size: 1.8rem;
+            margin-bottom: 25px;
+            color: var(--primary-dark);
+            position: relative;
+            display: inline-block;
+        }
+
+        body.dark-mode .footer h3 {
+            color: #93c5fd;
+        }
+
+        .footer h3:after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-top: 25px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.2rem;
+            background: rgba(37, 99, 235, 0.08);
+            padding: 12px 25px;
+            border-radius: 50px;
+            transition: var(--transition);
+        }
+
+        body.dark-mode .contact-item {
+            background: rgba(37, 99, 235, 0.15);
+        }
+
+        .contact-item:hover {
+            transform: translateY(-5px);
+            background: rgba(37, 99, 235, 0.15);
+        }
+
+        .contact-item i {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 35px;
+        }
+
+        .social-icon {
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            transition: var(--transition);
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+        }
+
+        .social-icon:hover {
+            transform: translateY(-8px) scale(1.1);
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2.4rem;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .form-container {
+                padding: 25px;
+            }
+            
+            .result-text {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+            
+            .contact-item {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .risk-labels span {
+                font-size: 0.7rem;
+            }
+            
+            .risk-percentage {
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .risk-labels {
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+            
+            .risk-labels span {
+                flex: 0 0 48%;
+                font-size: 0.6rem;
+            }
+            
+            .risk-labels span:not(:last-child):after {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme toggle button -->
+    <button id="themeToggle" class="theme-toggle">🌙</button>
+    
+    <!-- Falling symbols effect -->
+    <div class="symbols-container" id="symbols"></div>
+
+    <div class="header">
+        <h1>Health Risk Predictor</h1>
+        <div class="greeting">Welcome to Your Personalized Health Assessment</div>
+        <div class="creator">Prahallad Nayak</div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <h2>Disease Risk Prediction Form</h2>
+            <form id="predictionForm" method="POST" action="/predict">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <div class="input-container">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="e.g. John Doe" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="age">Age</label>
+                        <div class="input-container">
+                            <i class="fas fa-user input-icon"></i>
+                            <input type="number" id="age" name="age" class="form-control" placeholder="e.g. 25" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="bp">Blood Pressure (mmHg)</label>
+                        <div class="input-container">
+                            <i class="fas fa-heart-pulse input-icon"></i>
+                            <input type="number" id="bp" name="bp" class="form-control" placeholder="e.g. 120" required>
+                        </div>
+                        <small>Normal range: 90–120</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="chol">Cholesterol (mg/dL)</label>
+                        <div class="input-container">
+                            <i class="fas fa-prescription-bottle-medical input-icon"></i>
+                            <input type="number" id="chol" name="chol" class="form-control" placeholder="e.g. 180" required>
+                        </div>
+                        <small>Normal range: 125–200</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hr">Heart Rate (bpm)</label>
+                        <div class="input-container">
+                            <i class="fas fa-heart input-icon"></i>
+                            <input type="number" id="hr" name="hr" class="form-control" placeholder="e.g. 72" required>
+                        </div>
+                        <small>Normal range: 60–100</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="exercise">Exercise Level</label>
+                        <div class="input-container">
+                            <i class="fas fa-running input-icon"></i>
+                            <select id="exercise" name="exercise" class="form-control" required>
+                                <option value="1">High</option>
+                                <option value="2">Medium</option>
+                                <option value="3">Low</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="height">Height (in cm)</label>
+                        <div class="input-container">
+                            <i class="fas fa-ruler-vertical input-icon"></i>
+                            <input type="number" id="height" name="height" class="form-control" placeholder="e.g. 170" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="weight">Weight (in kg)</label>
+                        <div class="input-container">
+                            <i class="fas fa-weight-scale input-icon"></i>
+                            <input type="number" id="weight" name="weight" class="form-control" placeholder="e.g. 65" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="condition">Previous Condition</label>
+                        <div class="input-container">
+                            <i class="fas fa-file-medical input-icon"></i>
+                            <select id="condition" name="condition" class="form-control" required>
+                                <option value="3">None</option>
+                                <option value="0">Asthma</option>
+                                <option value="1">Hypertension</option>
+                                <option value="2">Cancer</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="medication">Medication</label>
+                        <div class="input-container">
+                            <i class="fas fa-pills input-icon"></i>
+                            <select id="medication" name="medication" class="form-control" required>
+                                <option value="1">A</option>
+                                <option value="2">B</option>
+                                <option value="3">C</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="gender">Gender</label>
+                        <div class="input-container">
+                            <i class="fas fa-venus-mars input-icon"></i>
+                            <select id="gender" name="gender" class="form-control" required>
+                                <option value="1">Male</option>
+                                <option value="0">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="diabetes">Diabetes</label>
+                        <div class="input-container">
+                            <i class="fas fa-vial input-icon"></i>
+                            <select id="diabetes" name="diabetes" class="form-control" required>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="smoker">Smoker</label>
+                        <div class="input-container">
+                            <i class="fas fa-smoking input-icon"></i>
+                            <select id="smoker" name="smoker" class="form-control" required>
+                                <option value="1">Yes</option>
+                                <option value="0">No</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">Predict Health Risk</button>
+                </div>
+            </form>
+        </div>
+        
+        <div class="result-container" id="resultContainer">
+            {% if prediction_text %}
+            <div class="result-text {% if 'High Risk' in prediction_text %}risk{% else %}healthy{% endif %}">
+                <span class="emoji">{% if 'High Risk' in prediction_text %}⚠️{% else %}✅{% endif %}</span>
+                <div>{{ prediction_text }}</div>
+            </div>
+            
+<!-- Fixed version with CSS classes instead of inline styles -->
+<div class="risk-bar-container">
+    <div class="risk-bar 
+        {% if risk_percentage < 30 %} 
+            risk-low
+        {% elif risk_percentage < 60 %} 
+            risk-medium
+        {% elif risk_percentage < 80 %} 
+            risk-high
+        {% else %} 
+            risk-very-high
+        {% endif %}" 
+        id="riskBar" 
+        style="width: {{ risk_percentage }}%;">
+        <div class="risk-percentage">{{ risk_percentage }}%</div>
+    </div>
+</div>
+            
+            <div class="risk-labels">
+                <span>Low Risk (0-30%)</span>
+                <span>Moderate (30-60%)</span>
+                <span>High (60-80%)</span>
+                <span>Critical (80-100%)</span>
+            </div>
+            
+            <div class="precautions" id="precautions">
+                <h3>Health Recommendations</h3>
+                <ul class="precaution-list" id="precautionList">
+                    <!-- Precautions will be added here -->
+                </ul>
+                
+                <div class="more-precautions" id="morePrecautions">
+                    <!-- Additional precautions will be added here -->
+                </div>
+                
+                <button class="learn-more" id="learnMoreBtn">Learn More</button>
+            </div>
+            
+            <div id="downloadSection" style="text-align: center;">
+                <a href="/download_report" class="download-btn" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download Full Health Report
+                </a>
+            </div>
+            {% else %}
+            <div style="text-align: center; padding: 50px;">
+                <h3>Submit your health information to get a risk assessment</h3>
+                <p>Fill out the form above and click "Predict Health Risk"</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <h3>Contact Information</h3>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-user"></i>
+                    <span>Prahallad Nayak</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>prahaladnayak873@gmail.com</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>8018333413</span>
+                </div>
+            </div>
+            
+            <div class="social-links">
+                <a href="https://www.linkedin.com/in/prahallad-nayak-9ab756290" class="social-icon" target="_blank">
+                    <i class="fab fa-linkedin-in"></i>
+                </a>
+                <a href="https://github.com/Prahalladnayak" class="social-icon" target="_blank">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="#" class="social-icon">
+                    <i class="fab fa-twitter"></i>
+                </a>
+                <a href="https://www.instagram.com/i_am_prahallad?igsh=MWc1djc5dDdxZW9heg==" class="social-icon" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Create falling medical symbols effect
+        function createFallingSymbols() {
+            const container = document.getElementById('symbols');
+            const symbolCount = 25;
+            const medicalSymbols = ['⚕️', '❤️', '🩺', '💊', '💉', '🩹', '🧬', '🔬', '🧪', '🚑', '🏥', '⚠️', '✅', '❌'];
+            
+            for (let i = 0; i < symbolCount; i++) {
+                const symbol = document.createElement('div');
+                symbol.classList.add('symbol');
+                
+                // Random symbol
+                const randomSymbol = medicalSymbols[Math.floor(Math.random() * medicalSymbols.length)];
+                symbol.textContent = randomSymbol;
+                
+                // Random position
+                const left = Math.random() * 100;
+                symbol.style.left = `${left}vw`;
+                
+                // Random animation duration
+                const duration = 10 + Math.random() * 15;
+                symbol.style.animationDuration = `${duration}s`;
+                
+                // Random delay
+                const delay = Math.random() * 10;
+                symbol.style.animationDelay = `${delay}s`;
+                
+                // Random start position
+                const startTop = Math.random() > 0.5 ? -50 : 100;
+                symbol.style.top = `${startTop}vh`;
+                
+                // Set animation based on start position
+                if (startTop === -50) {
+                    symbol.style.animationName = 'fall';
+                } else {
+                    symbol.style.animationName = 'rise';
+                }
+                
+                // Random size
+                const size = 1 + Math.random() * 1.5;
+                symbol.style.fontSize = `${size}rem`;
+                
+                container.appendChild(symbol);
+            }
+        }
+        
+        // Health precautions data
+        const precautionsData = {
+            healthy: [
+                {
+                    title: "Maintain a Balanced Diet",
+                    content: "Continue eating a variety of fruits, vegetables, whole grains, and lean proteins. Limit processed foods and added sugars."
+                },
+                {
+                    title: "Regular Exercise",
+                    content: "Aim for at least 150 minutes of moderate aerobic activity or 75 minutes of vigorous activity per week."
+                },
+                {
+                    title: "Adequate Sleep",
+                    content: "Get 7-9 hours of quality sleep each night to support overall health and immune function."
+                }
+            ],
+            risk: [
+                {
+                    title: "Consult a Healthcare Professional",
+                    content: "Schedule an appointment with your doctor to discuss your results and create a personalized health plan."
+                },
+                {
+                    title: "Improve Dietary Habits",
+                    content: "Reduce salt, sugar, and saturated fats. Increase intake of fiber-rich foods and antioxidants."
+                },
+                {
+                    title: "Increase Physical Activity",
+                    content: "Start with 30 minutes of moderate exercise daily. Walking, swimming, or cycling are excellent options."
+                }
+            ],
+            additional: [
+                {
+                    title: "Stress Management",
+                    content: "Practice mindfulness, meditation, or yoga to reduce stress levels which can impact your health."
+                },
+                {
+                    title: "Regular Health Screenings",
+                    content: "Stay up-to-date with health check-ups and screenings to monitor your condition."
+                },
+                {
+                    title: "Quit Smoking",
+                    content: "If you smoke, seek resources to help you quit. Smoking significantly increases health risks."
+                },
+                {
+                    title: "Limit Alcohol",
+                    content: "Reduce alcohol consumption to recommended levels (1 drink per day for women, 2 for men)."
+                },
+                {
+                    title: "Stay Hydrated",
+                    content: "Drink at least 8 glasses of water daily to support all bodily functions."
+                }
+            ]
+        };
+        
+        // Handle "Learn More" button
+        document.getElementById('learnMoreBtn')?.addEventListener('click', function() {
+            const morePrecautions = document.getElementById('morePrecautions');
+            if (morePrecautions.classList.contains('show')) {
+                morePrecautions.classList.remove('show');
+                this.textContent = 'Learn More';
+            } else {
+                morePrecautions.classList.add('show');
+                this.textContent = 'Show Less';
+            }
+        });
+        
+        // Theme toggle functionality
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            const isDarkMode = document.body.classList.contains('dark-mode');
+            this.textContent = isDarkMode ? '☀️' : '🌙';
+            
+            // Save preference to localStorage
+            localStorage.setItem('darkMode', isDarkMode);
+        });
+        
+        // Check for saved theme preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+            document.getElementById('themeToggle').textContent = '☀️';
+        }
+        
+        // Initialize the page
+        window.addEventListener('DOMContentLoaded', () => {
+            createFallingSymbols();
+            
+            // Add subtle hover effects to form controls
+            const formGroups = document.querySelectorAll('.form-group');
+            formGroups.forEach(group => {
+                group.addEventListener('mouseenter', () => {
+                    group.style.transform = 'translateY(-5px)';
+                });
+                
+                group.addEventListener('mouseleave', () => {
+                    group.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Initialize precautions if results are shown
+            if (document.querySelector('.result-text.risk, .result-text.healthy')) {
+                const isRisk = document.querySelector('.result-text.risk') !== null;
+                const precautionList = document.getElementById('precautionList');
+                const morePrecautions = document.getElementById('morePrecautions');
+                precautionList.innerHTML = '';
+                morePrecautions.innerHTML = '';
+                
+                // Get appropriate precautions
+                const precautions = isRisk ? precautionsData.risk : precautionsData.healthy;
+                
+                // Add primary precautions
+                precautions.forEach(precaution => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <i class="fas fa-heartbeat"></i>
+                        <div class="precaution-content">
+                            <h4>${precaution.title}</h4>
+                            <p>${precaution.content}</p>
+                        </div>
+                    `;
+                    precautionList.appendChild(li);
+                });
+                
+                // Add additional precautions
+                precautionsData.additional.forEach(precaution => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `
+                        <i class="fas fa-star-of-life"></i>
+                        <div class="precaution-content">
+                            <h4>${precaution.title}</h4>
+                            <p>${precaution.content}</p>
+                        </div>
+                    `;
+                    morePrecautions.appendChild(li);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
