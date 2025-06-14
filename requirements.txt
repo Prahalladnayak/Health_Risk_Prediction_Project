@@ -1,9 +1,9 @@
 --only-binary :all:
 Flask==2.3.3
 gunicorn==21.2.0
-numpy==2.0.0  # Updated to stable NumPy 2.x version
-pandas==2.2.1  # Updated to match NumPy 2.x
-scikit-learn==1.4.2  # Updated for compatibility
+numpy==2.1.0  # Updated to available version
+pandas==2.2.1  # Compatible with NumPy 2.x
+scikit-learn==1.4.2
 matplotlib==3.8.4
-seaborn==0.13.2  # Updated version
-reportlab==4.1.0  # For PDF generation
+seaborn==0.13.2
+reportlab==4.1.0
