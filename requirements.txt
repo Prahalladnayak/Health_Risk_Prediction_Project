@@ -1,8 +1,8 @@
---only-binary :all:
+--only-binary :all:  # Ensures pre-built wheels are used
 Flask==2.3.3
 gunicorn==21.2.0
-numpy==2.1.0  # Updated to available version
-pandas==2.2.1  # Compatible with NumPy 2.x
+numpy==2.1.0
+pandas==2.2.3  # Updated to available version
 scikit-learn==1.4.2
 matplotlib==3.8.4
 seaborn==0.13.2
