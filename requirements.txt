@@ -3,7 +3,7 @@ Flask==2.3.3
 gunicorn==21.2.0
 numpy==2.1.0
 pandas==2.2.3
-scikit-learn==1.5.2  # Updated to lowest available stable version
-matplotlib==3.8.4
+scikit-learn==1.5.2
+matplotlib==3.9.4  # Updated to available version
 seaborn==0.13.2
 reportlab==4.1.0
